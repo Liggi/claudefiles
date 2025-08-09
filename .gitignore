@@ -1,0 +1,16 @@
+# Claude Code runtime files (don't version control these)
+config/logs/
+config/shell-snapshots/
+config/projects/
+config/ide/
+config/agents/
+config/commands/
+config/statsig/
+config/todos/
+
+# Temporary and cache files
+config/.DS_Store
+config/note
+
+# Backup files
+*.backup.*

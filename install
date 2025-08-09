@@ -1,0 +1,46 @@
+#!/bin/bash
+
+CLAUDEFILES_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+CLAUDE_DIR="$HOME/.claude"
+BACKUP_DIR="$HOME/.claude.backup.$(date +%Y%m%d_%H%M%S)"
+
+echo "🤖 Setting up claudefiles..."
+
+# Backup existing .claude directory if it exists and is not a symlink
+if [[ -d "$CLAUDE_DIR" && ! -L "$CLAUDE_DIR" ]]; then
+    echo "📦 Backing up existing ~/.claude to $BACKUP_DIR"
+    mv "$CLAUDE_DIR" "$BACKUP_DIR"
+    echo "   Your previous settings are safe in $BACKUP_DIR"
+fi
+
+# Remove existing symlink if present
+if [[ -L "$CLAUDE_DIR" ]]; then
+    echo "🗑️  Removing existing symlink"
+    rm "$CLAUDE_DIR"
+fi
+
+# Create symlink
+echo "🔗 Symlinking $CLAUDEFILES_DIR/config → ~/.claude"
+ln -sf "$CLAUDEFILES_DIR/config" "$CLAUDE_DIR"
+
+# Make hook scripts executable
+echo "🔧 Making hook scripts executable"
+chmod +x "$CLAUDEFILES_DIR/config/hooks"/*.sh 2>/dev/null || true
+
+# Initialize git repo if not already done
+if [[ ! -d "$CLAUDEFILES_DIR/.git" ]]; then
+    echo "📁 Initializing git repository"
+    cd "$CLAUDEFILES_DIR"
+    git init
+    git add .
+    git commit -m "Initial claudefiles setup"
+fi
+
+echo "✅ Claudefiles installed successfully!"
+echo ""
+echo "Next steps:"
+echo "  1. Restart Claude Code to apply changes"
+echo "  2. Push this repo to GitHub: git remote add origin <your-repo-url>"
+echo "  3. Customize settings in claudefiles/config/ as needed"
+echo ""
+echo "Your Claude Code configuration is now version controlled! 🎉"

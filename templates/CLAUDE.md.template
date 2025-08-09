@@ -1,0 +1,53 @@
+# Project Context for Claude
+
+## Project Overview
+Brief description of what this project does and its main purpose.
+
+## Architecture
+- **Tech Stack**: List main technologies
+- **Key Components**: Main modules/services
+- **Data Flow**: How data moves through the system
+
+## Development Setup
+```bash
+# Installation steps
+npm install
+# or
+pip install -r requirements.txt
+
+# Running locally  
+npm run dev
+# or
+python main.py
+```
+
+## Key Files & Directories
+- `src/` - Main source code
+- `tests/` - Test files
+- `docs/` - Documentation
+- `config/` - Configuration files
+
+## Coding Conventions
+- Code style guide (if any)
+- Naming conventions
+- File organization patterns
+
+## Common Tasks
+- **Running tests**: `npm test`
+- **Building**: `npm run build`
+- **Linting**: `npm run lint`
+- **Database migrations**: `npm run migrate`
+
+## Important Context
+- Business rules or constraints
+- External dependencies
+- Known issues or technical debt
+- Recent changes or ongoing work
+
+## Useful Commands
+```bash
+# Add any project-specific commands here
+```
+
+## Notes
+Any additional context that would help Claude understand this project better.
