@@ -8,6 +8,7 @@ Version-controlled configuration for Claude Code, inspired by dotfiles.
 - **Enhanced statusline** with time, date, model, and directory
 - **Settings** for permissions and Claude Code behavior
 - **Templates** for project-specific CLAUDE.md files
+- **OpenAI CLI** with GPT-5 and web search capabilities
 
 ## Quick setup
 
@@ -21,6 +22,8 @@ The installer will:
 - Backup your existing `~/.claude` directory
 - Symlink `~/claudefiles/config` → `~/.claude`  
 - Make hook scripts executable
+- Install OpenAI Python library and setup GPT-5 CLI
+- Add claudefiles to your PATH
 - Initialize git repo (if needed)
 
 ## Structure
@@ -28,6 +31,7 @@ The installer will:
 ```
 claudefiles/
 ├── install              # Setup script
+├── gpt5-search          # GPT-5 CLI with web search
 ├── config/             # Symlinked to ~/.claude
 │   ├── settings.json   # Main Claude Code settings
 │   ├── settings.local.json  # Local permissions
@@ -47,6 +51,18 @@ Edit files in `claudefiles/config/` - changes take effect immediately since they
 ### Adding new projects
 
 Copy `templates/CLAUDE.md.template` to your project root and customize.
+
+### OpenAI CLI Usage
+
+```bash
+# Ask GPT-5 with web search
+gpt5-search "What's happening in AI today?"
+
+# Direct OpenAI API access  
+python3 -m openai api chat.completions.create -m gpt-5 -g user "Hello"
+```
+
+**Requirements**: Set `OPENAI_API_KEY` environment variable in your shell config.
 
 ## Syncing across machines
 

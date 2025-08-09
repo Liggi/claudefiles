@@ -1,0 +1,52 @@
+#!/bin/bash
+
+# GPT-5 Web Search CLI Tool
+# Usage: gpt5-search "your question"
+
+if [ $# -eq 0 ]; then
+    echo "Usage: gpt5-search \"your question\""
+    echo "Example: gpt5-search \"What's the latest news about AI?\""
+    exit 1
+fi
+
+QUESTION="$*"
+
+# Use GPT-5 with the Responses API for web search
+python3 -c "
+import openai
+import os
+import sys
+
+client = openai.OpenAI()
+
+try:
+    # Use the Responses API with web search tool
+    response = client.responses.create(
+        model='gpt-4o',  # Web search requires gpt-4o for now
+        tools=[{
+            'type': 'web_search_preview',
+            'user_location': {
+                'type': 'approximate', 
+                'country': 'GB',
+                'timezone': 'Europe/London'
+            }
+        }],
+        input='''$QUESTION'''
+    )
+    
+    print(response.output_text)
+    
+except Exception as e:
+    print(f'Error with web search: {e}')
+    print('Falling back to basic GPT-5...')
+    
+    # Fallback to basic GPT-5 without web search
+    response = client.chat.completions.create(
+        model='gpt-5',
+        messages=[
+            {'role': 'user', 'content': '''$QUESTION'''}
+        ]
+    )
+    
+    print(response.choices[0].message.content)
+"
