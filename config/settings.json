@@ -6,11 +6,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "/Users/jasonliggi/.claude/git-hook.sh"
-          },
-          {
-            "type": "command",
-            "command": "/Users/jasonliggi/.claude/file-tools-hook.sh"
+            "command": "/Users/jasonliggi/.claude/hooks/file-tools-hook.sh"
           }
         ]
       }
@@ -21,7 +17,7 @@
   },
   "statusLine": {
     "type": "command",
-    "command": "bash /Users/jasonliggi/.claude/statusline-command.sh"
+    "command": "bash /Users/jasonliggi/.claude/hooks/statusline-command.sh"
   },
   "$schema": "https://json.schemastore.org/claude-code-settings.json"
 }

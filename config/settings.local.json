@@ -1,7 +1,8 @@
 {
   "permissions": {
     "allow": [
-      "Bash(brew list:*)"
+      "Bash(brew list:*)",
+      "Bash(echo *)"
     ],
     "deny": []
   }
