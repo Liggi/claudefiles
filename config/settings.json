@@ -9,6 +9,33 @@
             "command": "/Users/jasonliggi/.claude/hooks/file-tools-hook.sh"
           }
         ]
+      },
+      {
+        "matcher": "Edit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "/Users/jasonliggi/.claude/hooks/comment_analyzer.py"
+          }
+        ]
+      },
+      {
+        "matcher": "MultiEdit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "/Users/jasonliggi/.claude/hooks/comment_analyzer.py"
+          }
+        ]
+      },
+      {
+        "matcher": "Write",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "/Users/jasonliggi/.claude/hooks/comment_analyzer.py"
+          }
+        ]
       }
     ]
   },

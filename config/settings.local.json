@@ -3,7 +3,8 @@
     "allow": [
       "Bash(brew list:*)",
       "Bash(echo *)",
-      "Bash(cursor-agent:*)"
+      "Bash(cursor-agent:*)",
+      "Bash(echo $PATH)"
     ],
     "deny": []
   }

@@ -23,6 +23,10 @@ fi
 echo "🔗 Symlinking $CLAUDEFILES_DIR/config → ~/.claude"
 ln -sf "$CLAUDEFILES_DIR/config" "$CLAUDE_DIR"
 
+# Symlink CLAUDE.md to make it discoverable by Claude Code
+echo "🔗 Symlinking CLAUDE.md for automatic discovery"
+ln -sf "$CLAUDEFILES_DIR/CLAUDE.md" "$CLAUDE_DIR/CLAUDE.md"
+
 # Make hook scripts executable
 echo "🔧 Making hook scripts executable"
 chmod +x "$CLAUDEFILES_DIR/config/hooks"/*.sh 2>/dev/null || true

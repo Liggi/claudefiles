@@ -12,8 +12,8 @@ if [[ "$command" =~ [[:space:]]cat[[:space:]] ]] && [[ ! "$command" =~ \<\< ]]; 
     exit 2
 fi
 
-# Check for find command anywhere
-if [[ "$command" =~ [[:space:]]find[[:space:]] ]]; then
+# Check for find command anywhere (but exclude gpt5-search)
+if [[ "$command" =~ [[:space:]]find[[:space:]] ]] && [[ ! "$command" =~ gpt5-search ]]; then
     echo "Use 'fd' instead of 'find' for faster, cleaner syntax" >&2
     exit 2
 fi
