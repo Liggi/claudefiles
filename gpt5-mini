@@ -1,0 +1,39 @@
+#!/bin/bash
+
+# GPT-5 Mini CLI Tool for quick analysis tasks
+# Usage: gpt5-mini -f filename (reads prompt from file)
+# Usage: gpt5-mini "your prompt" (direct prompt)
+
+if [ "$1" = "-f" ] && [ -n "$2" ]; then
+    # Read prompt from file
+    PROMPT=$(cat "$2")
+elif [ $# -gt 0 ]; then
+    # Use arguments as prompt
+    PROMPT="$*"
+else
+    echo "Usage: gpt5-mini -f filename OR gpt5-mini \"your prompt\""
+    exit 1
+fi
+
+# Use GPT-5 Mini for analysis
+python3 -c "
+import openai
+import os
+import sys
+
+client = openai.OpenAI()
+
+try:
+    response = client.chat.completions.create(
+        model='gpt-5-mini',
+        messages=[
+            {'role': 'user', 'content': '''$PROMPT'''}
+        ]
+    )
+    
+    print(response.choices[0].message.content)
+    
+except Exception as e:
+    print(f'Error: {e}', file=sys.stderr)
+    sys.exit(1)
+"

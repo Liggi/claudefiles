@@ -1,52 +1,121 @@
-#!/bin/bash
+#!/usr/bin/env python3
 
-# GPT-5 Web Search CLI Tool
-# Usage: gpt5-search "your question"
+import sys, json, time, random, argparse
+from openai import OpenAI
 
-if [ $# -eq 0 ]; then
-    echo "Usage: gpt5-search \"your question\""
-    echo "Example: gpt5-search \"What's the latest news about AI?\""
-    exit 1
-fi
+client = OpenAI()
 
-QUESTION="$*"
-
-# Use GPT-5 with the Responses API for web search
-python3 -c "
-import openai
-import os
-import sys
-
-client = openai.OpenAI()
-
-try:
-    # Use the Responses API with web search tool
-    response = client.responses.create(
-        model='gpt-4o',  # Web search requires gpt-4o for now
-        tools=[{
-            'type': 'web_search_preview',
-            'user_location': {
-                'type': 'approximate', 
-                'country': 'GB',
-                'timezone': 'Europe/London'
-            }
-        }],
-        input='''$QUESTION'''
-    )
+def search_with_gpt4o(query, max_links=6):
+    print(f"[pass1] Searching...", file=sys.stderr)
     
-    print(response.output_text)
+    for attempt in range(3):
+        try:
+            response = client.chat.completions.create(
+                model="gpt-4o-search-preview",
+                max_tokens=2048,
+                messages=[
+                    {"role": "system", "content": "You MUST return ONLY valid JSON in this exact format: {\"items\":[{\"url\":\"actual_url\",\"title\":\"actual_title\",\"date\":\"actual_date\",\"note\":\"brief_note\"}]}. No other text before or after."},
+                    {"role": "user", "content": f"Search for {max_links} sources about: {query}"}
+                ]
+            )
+            
+            usage = response.usage
+            print(f"[pass1] tokens: {usage.total_tokens}", file=sys.stderr)
+            
+            text = response.choices[0].message.content
+            
+            try:
+                data = json.loads(text)
+                return data.get("items", [])[:max_links]
+            except json.JSONDecodeError:
+                start = text.find("{")
+                end = text.rfind("}")
+                if start >= 0 and end > start:
+                    try:
+                        return json.loads(text[start:end+1]).get("items", [])[:max_links]
+                    except:
+                        pass
+                return []
+                
+        except Exception as e:
+            if "rate" in str(e).lower():
+                sleep_time = (2 ** attempt) * 2
+                print(f"[pass1] Rate limited, sleeping {sleep_time}s", file=sys.stderr)
+                time.sleep(sleep_time)
+                continue
+            print(f"[pass1] Error: {e}", file=sys.stderr)
+            return []
     
-except Exception as e:
-    print(f'Error with web search: {e}')
-    print('Falling back to basic GPT-5...')
+    return []
+
+def synthesize_with_gpt5(query, items, long_mode=False):
+    if not items:
+        return "No sources found."
     
-    # Fallback to basic GPT-5 without web search
-    response = client.chat.completions.create(
-        model='gpt-5',
-        messages=[
-            {'role': 'user', 'content': '''$QUESTION'''}
-        ]
-    )
+    print(f"[pass2] Synthesizing...", file=sys.stderr)
     
-    print(response.choices[0].message.content)
-"
+    sources = "\n".join([
+        f"- {item.get('title', 'Unknown')} ({item.get('url', 'no-url')}) - {item.get('note', '')}"
+        for item in items
+    ])
+    
+    cap = 16384 if long_mode else 8192
+    
+    for attempt in range(3):
+        try:
+            with client.responses.stream(
+                model="gpt-5",
+                max_output_tokens=cap,
+                reasoning={"effort": "medium"},
+                input=[
+                    {"role": "system", "content": "Write summaries citing only provided sources."},
+                    {"role": "user", "content": f"Query: {query}\n\nSources:\n{sources}\n\nWrite a summary with key points and citations."}
+                ]
+            ) as stream:
+                chunks = []
+                for event in stream:
+                    if event.type == "response.output_text.delta":
+                        chunks.append(event.delta)
+                
+                final = stream.get_final_response()
+                usage = getattr(final, "usage", None)
+                if usage:
+                    total = usage.input_tokens + usage.output_tokens + getattr(usage, "reasoning_tokens", 0)
+                    print(f"[pass2] tokens: {total}", file=sys.stderr)
+                
+                return "".join(chunks) or getattr(final, "output_text", "")
+                
+        except Exception as e:
+            if "rate" in str(e).lower():
+                sleep_time = (2 ** attempt) * 3
+                print(f"[pass2] Rate limited, sleeping {sleep_time}s", file=sys.stderr)
+                time.sleep(sleep_time)
+                continue
+            return f"Error: {e}"
+    
+    return "Synthesis failed."
+
+def main():
+    parser = argparse.ArgumentParser()
+    parser.add_argument("query")
+    parser.add_argument("--long", action="store_true")
+    parser.add_argument("--links", type=int, default=6)
+    parser.add_argument("--dry", action="store_true")
+    
+    args = parser.parse_args()
+    
+    items = search_with_gpt4o(args.query, args.links)
+    
+    if args.dry:
+        print(json.dumps({"query": args.query, "items": items}, indent=2))
+        return
+    
+    if not items:
+        print("No sources found.")
+        return
+    
+    result = synthesize_with_gpt5(args.query, items, args.long)
+    print(result)
+
+if __name__ == "__main__":
+    main()
