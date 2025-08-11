@@ -30,12 +30,26 @@ def extract_comments_from_code(code, language=None):
         ]
     }
     
+    def is_inside_string(line, pos):
+        """Check if position is inside a string literal."""
+        # Simple check for common string delimiters before the position
+        before_pos = line[:pos]
+        single_quotes = before_pos.count("'") - before_pos.count("\\'")
+        double_quotes = before_pos.count('"') - before_pos.count('\\"')
+        return (single_quotes % 2 == 1) or (double_quotes % 2 == 1)
+    
     for i, line in enumerate(lines, 1):
         original_line = line
-        line = line.strip()
+        line_stripped = line.strip()
+        
         for pattern in patterns['single_line']:
             match = re.search(pattern, line)
             if match:
+                # Check if this match is inside a string literal
+                match_pos = match.start()
+                if is_inside_string(line, match_pos):
+                    continue
+                
                 comment_text = match.group(1).strip()
                 if comment_text:
                     with open('/tmp/hook_debug.log', 'a') as f:
