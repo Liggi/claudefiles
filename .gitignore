@@ -3,8 +3,6 @@ config/logs/
 config/shell-snapshots/
 config/projects/
 config/ide/
-config/agents/
-config/commands/
 config/statsig/
 config/todos/
 
