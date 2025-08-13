@@ -1,6 +1,6 @@
 #!/bin/bash
 
-CLAUDEFILES_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+CLAUDEFILES_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")"/.. && pwd)"
 CLAUDE_DIR="$HOME/.claude"
 BACKUP_DIR="$HOME/.claude.backup.$(date +%Y%m%d_%H%M%S)"
 
@@ -49,8 +49,9 @@ if command -v python3 &> /dev/null; then
     echo "📦 Installing/updating OpenAI Python library..."
     python3 -m pip install --user --upgrade openai
     
-    # Make gpt5-search executable
-    chmod +x "$CLAUDEFILES_DIR/gpt5-search" 2>/dev/null || true
+    # Make CLI tools executable
+    chmod +x "$CLAUDEFILES_DIR/bin/gpt5-search" 2>/dev/null || true
+    chmod +x "$CLAUDEFILES_DIR/bin/gpt5-mini" 2>/dev/null || true
     
     # Add claudefiles to PATH if not already there
     SHELL_RC=""
@@ -62,8 +63,8 @@ if command -v python3 &> /dev/null; then
     
     if [[ -n "$SHELL_RC" ]]; then
         if ! grep -q 'claudefiles.*PATH' "$SHELL_RC" 2>/dev/null; then
-            echo "🔗 Adding claudefiles to PATH in $SHELL_RC..."
-            echo 'export PATH="$HOME/claudefiles:$PATH"' >> "$SHELL_RC"
+            echo "🔗 Adding claudefiles/bin to PATH in $SHELL_RC..."
+            echo 'export PATH="$HOME/claudefiles/bin:$PATH"' >> "$SHELL_RC"
         fi
     fi
     

@@ -14,7 +14,10 @@
       "Bash(tmux list-keys:*)",
       "Bash(tmux list-sessions:*)",
       "Bash(tmux list-panes:*)",
-      "Bash(tmux send-keys:*)"
+      "Bash(tmux send-keys:*)",
+      "Bash(gh pr view:*)",
+      "Bash(gh pr diff:*)",
+      "Bash(fd:*)"
     ],
     "deny": []
   }
