@@ -11,7 +11,10 @@
       "mcp__puppeteer__puppeteer_fill",
       "mcp__puppeteer__puppeteer_click",
       "mcp__puppeteer__puppeteer_evaluate",
-      "Bash(tmux list-keys:*)"
+      "Bash(tmux list-keys:*)",
+      "Bash(tmux list-sessions:*)",
+      "Bash(tmux list-panes:*)",
+      "Bash(tmux send-keys:*)"
     ],
     "deny": []
   }
