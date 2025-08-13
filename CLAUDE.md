@@ -57,6 +57,14 @@
 - "dotfiles" = `/Users/jasonliggi/dotfiles`
 - "claudefiles" = `/Users/jasonliggi/claudefiles`
 
+## GitHub CLI Tips
+**Finding PR Comments:**
+- `gh pr view <number> --comments` - Shows general PR comments only
+- `gh api repos/<owner>/<repo>/pulls/<number>/comments` - Shows inline review comments (line-specific)
+- `gh pr view <number> --json reviews` - Shows review summaries (but not inline comment bodies)
+
+**Why this matters:** Inline review comments (the ones you see when reviewing specific lines of code) don't appear in the standard `--comments` output and require the API call to retrieve.
+
 ## Commit Guidelines
 - NEVER add "> Generated with [Claude Code]" or "Co-Authored-By: Claude" to commit messages
 - Use clean, standard commit messages without Claude Code attribution
