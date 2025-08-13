@@ -24,9 +24,10 @@ def extract_comments_from_code(code, language=None):
             r'^\s*--\s*(.+)$',  # SQL, Haskell style - must start line
         ],
         'multi_line': [
-            r'/\*\s*(.+?)\s*\*/',  # C style block comments
-            r'"""(.+?)"""',        # Python docstrings
-            r"'''(.+?)'''",        # Python docstrings
+            r'\{\s*/\*\s*(.+?)\s*\*/\s*\}',  # JSX comments (check first)
+            r'/\*\s*(.+?)\s*\*/',     # C style block comments
+            r'"""(.+?)"""',           # Python docstrings
+            r"'''(.+?)'''",           # Python docstrings
         ]
     }
     
@@ -62,8 +63,32 @@ def extract_comments_from_code(code, language=None):
                     })
                 break
     
-    # For multi-line comments, we'd need more sophisticated parsing
-    # For now, focus on single-line comments which are most common
+    # Process multi-line comments including JSX comments
+    full_content = '\n'.join(lines)
+    matched_ranges = []
+    
+    for pattern in patterns['multi_line']:
+        matches = re.finditer(pattern, full_content, re.DOTALL)
+        for match in matches:
+            overlaps = any(
+                (match.start() < end and match.end() > start) 
+                for start, end in matched_ranges
+            )
+            if overlaps:
+                continue
+                
+            comment_text = match.group(1).strip()
+            if comment_text:
+                start_pos = match.start()
+                line_num = full_content[:start_pos].count('\n') + 1
+                matched_ranges.append((match.start(), match.end()))
+                comments.append({
+                    'line': line_num,
+                    'text': comment_text,
+                    'type': 'multi_line',
+                    'full_line': lines[line_num - 1] if line_num <= len(lines) else ''
+                })
+    
     return comments
 
 def analyze_comments_with_gpt5(comments, code_context):
@@ -85,8 +110,12 @@ Comments to analyze:
 {comments_text}
 
 For each comment, determine if it is:
-1. REDUNDANT: States the obvious or duplicates what the code clearly shows
-2. USEFUL: Provides context, explains why (not what), documents complex logic, or adds valuable information
+1. REDUNDANT: States something reasonably obvious from reading the code and adds no value, OR refers to previous states of the code (transitional comments)
+2. USEFUL: Provides context, improves glanceability, explains why, documents complex logic, or adds valuable information
+
+Focus on comments that improve glanceability without adding noise to the code.
+
+IMPORTANT: Comments that reference previous code states, moves, or changes should be considered REDUNDANT as they become stale and don't help understand the current code.
 
 Respond with JSON format:
 {{
@@ -101,11 +130,16 @@ Respond with JSON format:
 }}
 
 Examples of REDUNDANT comments:
-- "// Initialize the database connection" above db = new Database()
-- "// Create user object with email and name" above user = new User(email, name)
-- "// Check if user exists in the system" above if (userExists(id))
+- "// Set x to 5" above x = 5
+- "// Return true" above return true
+- "// Call function" above someFunction()
+- "// Hand off moved to left side" (transitional comment referencing previous state)
+- "// This used to be on the right" (historical comment about previous code)
+- "// Moved as part of refactoring" (change history comment)
 
-Examples of USEFUL comments:
+Examples of USEFUL comments (including glanceability enhancers):
+- "// Show only the context up to and including when the AI asked a human" above timeline slicing logic
+- "// Auto-scroll to bottom when timeline is loaded or changes" above useEffect scroll logic  
 - "// Workaround for API bug in v2.1"
 - "// Performance optimization: cache results for 5 minutes"
 - "// TODO: Replace with new authentication system"
