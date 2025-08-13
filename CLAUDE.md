@@ -2,7 +2,7 @@
 
 ## Web Search Strategy
 **For comprehensive research tasks requiring depth, citations, and recent information:**
-- Use the custom `gpt5-search` script via: `python3 gpt5-search "detailed prompt"`
+- Use the custom `gpt5-search` script via: `gpt5-search "detailed prompt"`
 - Provides superior depth, structured analysis, comprehensive source citations, and recent content
 - ~4.6k token cost but delivers research-quality results with proper attribution
 - Best for: technical documentation research, framework comparisons, architectural decisions
@@ -52,6 +52,10 @@
 - Each tool call is stateless - tools don't automatically share context
 - Research findings are only valuable if explicitly passed to tools that need them
 - Planning agents are designed to receive research context but won't work without it
+
+## Path Aliases
+- "dotfiles" = `/Users/jasonliggi/dotfiles`
+- "claudefiles" = `/Users/jasonliggi/claudefiles`
 
 ## Commit Guidelines
 - NEVER add "> Generated with [Claude Code]" or "Co-Authored-By: Claude" to commit messages
