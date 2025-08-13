@@ -17,7 +17,9 @@
       "Bash(tmux send-keys:*)",
       "Bash(gh pr view:*)",
       "Bash(gh pr diff:*)",
-      "Bash(fd:*)"
+      "Bash(fd:*)",
+      "Bash(echo * > ~/.claude/note)",
+      "Bash(rm ~/.claude/note)"
     ],
     "deny": []
   }

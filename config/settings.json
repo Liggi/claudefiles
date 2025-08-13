@@ -50,5 +50,12 @@
     "BASH_DEFAULT_TIMEOUT_MS": "900000",
     "BASH_MAX_TIMEOUT_MS": "900000"
   },
+  "toolPermissions": {
+    "allow": [
+      "Bash(echo * > ~/.claude/note)",
+      "Bash(rm ~/.claude/note)"
+    ],
+    "deny": []
+  },
   "$schema": "https://json.schemastore.org/claude-code-settings.json"
 }
