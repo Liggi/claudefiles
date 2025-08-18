@@ -19,8 +19,12 @@
       "Bash(gh pr diff:*)",
       "Bash(fd:*)",
       "Bash(echo * > ~/.claude/note)",
-      "Bash(rm ~/.claude/note)"
+      "Bash(rm ~/.claude/note)",
+      "WebSearch",
+      "Bash(tmux display-popup:*)",
+      "Bash(tmux new-window:*)"
     ],
     "deny": []
-  }
+  },
+  "outputStyle": "Explanatory"
 }

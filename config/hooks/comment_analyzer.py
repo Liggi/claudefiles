@@ -43,6 +43,14 @@ def extract_comments_from_code(code, language=None):
         original_line = line
         line_stripped = line.strip()
         
+        # Check if next line looks like a struct field declaration
+        next_line = lines[i] if i < len(lines) else None
+        is_struct_field = bool(re.match(r'^\s+\w+\s+[\w\*\[\]\.]+.*$', next_line or ''))
+        
+        # Skip struct field comments - they document API contracts
+        if is_struct_field:
+            continue
+        
         for pattern in patterns['single_line']:
             match = re.search(pattern, line)
             if match:
@@ -228,14 +236,23 @@ def main():
     if file_path.endswith(('.md', '.markdown')):
         sys.exit(0)
 
-    # Extract the new code content
     new_content = ""
     if tool_name == "Edit":
         new_content = tool_input.get("new_string", "")
+        old_content = tool_input.get("old_string", "")
+        if old_content in new_content:
+            new_content = new_content.replace(old_content, "", 1).strip()
     elif tool_name == "MultiEdit":
-        # For MultiEdit, check all edits
         edits = tool_input.get("edits", [])
-        new_content = "\n".join([edit.get("new_string", "") for edit in edits])
+        truly_new_content = []
+        for edit in edits:
+            new_str = edit.get("new_string", "")
+            old_str = edit.get("old_string", "")
+            if old_str == "":
+                truly_new_content.append(new_str)
+            elif old_str not in new_str:
+                truly_new_content.append(new_str)
+        new_content = "\n".join(truly_new_content)
     elif tool_name == "Write":
         new_content = tool_input.get("content", "")
 

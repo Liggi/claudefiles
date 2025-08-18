@@ -1,4 +1,9 @@
 {
+  "$schema": "https://json.schemastore.org/claude-code-settings.json",
+  "env": {
+    "BASH_DEFAULT_TIMEOUT_MS": "900000",
+    "BASH_MAX_TIMEOUT_MS": "900000"
+  },
   "hooks": {
     "PreToolUse": [
       {
@@ -39,16 +44,12 @@
       }
     ]
   },
-  "feedbackSurveyState": {
-    "lastShownTime": 1754038067914
-  },
   "statusLine": {
     "type": "command",
     "command": "bash /Users/jasonliggi/.claude/hooks/statusline-command.sh"
   },
-  "env": {
-    "BASH_DEFAULT_TIMEOUT_MS": "900000",
-    "BASH_MAX_TIMEOUT_MS": "900000"
+  "feedbackSurveyState": {
+    "lastShownTime": 1754038067914
   },
   "toolPermissions": {
     "allow": [
@@ -57,5 +58,7 @@
     ],
     "deny": []
   },
-  "$schema": "https://json.schemastore.org/claude-code-settings.json"
+  "model": "opusplan",
+  "includeCoAuthoredBy": false,
+  "gitAttribution": false
 }
