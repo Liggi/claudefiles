@@ -20,7 +20,7 @@ def extract_comments_from_code(code, language=None):
     patterns = {
         'single_line': [
             r'//\s*(.+)$',      # C++, JS, Java style
-            r'#\s*(.+)$',       # Python, Shell style
+            r'(?<!\$)#\s*(.+)$',       # Python, Shell style - not preceded by $
             r'^\s*--\s*(.+)$',  # SQL, Haskell style - must start line
         ],
         'multi_line': [
@@ -43,6 +43,10 @@ def extract_comments_from_code(code, language=None):
         original_line = line
         line_stripped = line.strip()
         
+        # Skip shebang lines (#!/...)
+        if line_stripped.startswith('#!'):
+            continue
+            
         # Check if next line looks like a struct field declaration
         next_line = lines[i] if i < len(lines) else None
         is_struct_field = bool(re.match(r'^\s+\w+\s+[\w\*\[\]\.]+.*$', next_line or ''))
