@@ -68,6 +68,33 @@
 - `/note` - Set contextual notes in statusline
 - `/rightpanel` - Read and act on pane 3 (Neovim/Terminal) content
 - `/amppanel` - Interact with pane 1 (Amp)
+- `/mapper` - Launch codebase-mapper agent for architectural understanding
+- `/locator` - Launch code-locator agent to find specific functionality
+- `/adversarial` - Launch adversarial-analysis agent for critical evaluation
+
+## Subagent Usage Strategy
+
+**Always prefer subagents for architectural analysis:**
+- Use `/mapper` for "how does X work?" questions
+- Use `/locator` for "where is X implemented?" questions  
+- Use `/adversarial` for "what's wrong with X?" questions
+
+### Core Subagents
+
+**code-locator** (`/locator`) - Find specific functionality:
+- "Where is X feature implemented?"
+- "Find all files related to Y functionality"
+- "Locate the code that handles Z operation"
+
+**codebase-mapper** (`/mapper`) - Architectural understanding:
+- "How does the authentication system work?"
+- "Map the data flow for user registration"
+- "Understand the overall architecture of X module"
+
+**adversarial-analysis** (`/adversarial`) - Critical evaluation:
+- "What are the security vulnerabilities in this approach?"
+- "Identify potential issues with this design"
+- "Critique this implementation strategy"
 
 ## Web Search Strategy
 

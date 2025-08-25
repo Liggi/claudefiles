@@ -19,8 +19,8 @@ def extract_comments_from_code(code, language=None):
     # Common comment patterns
     patterns = {
         'single_line': [
-            r'//\s*(.+)$',      # C++, JS, Java style
-            r'(?<!\$)#\s*(.+)$',       # Python, Shell style - not preceded by $
+            r'(?<!:)//\s*(.+)$',      # C++, JS, Java style - not preceded by :
+            r'(?<!\$)#\s*(.+)$',       # Python, Shell style - not preceded by $ - exclude URLs
             r'^\s*--\s*(.+)$',  # SQL, Haskell style - must start line
         ],
         'multi_line': [
@@ -32,11 +32,14 @@ def extract_comments_from_code(code, language=None):
     }
     
     def is_inside_string(line, pos):
-        """Check if position is inside a string literal."""
-        # Simple check for common string delimiters before the position
         before_pos = line[:pos]
         single_quotes = before_pos.count("'") - before_pos.count("\\'")
         double_quotes = before_pos.count('"') - before_pos.count('\\"')
+        
+        # Skip content inside print/log functions to avoid flagging debug output
+        if re.search(r'\b(print|console\.log|printf|puts|echo)\s*\(', line[:pos]):
+            return True
+            
         return (single_quotes % 2 == 1) or (double_quotes % 2 == 1)
     
     for i, line in enumerate(lines, 1):
@@ -58,13 +61,20 @@ def extract_comments_from_code(code, language=None):
         for pattern in patterns['single_line']:
             match = re.search(pattern, line)
             if match:
-                # Check if this match is inside a string literal
                 match_pos = match.start()
                 if is_inside_string(line, match_pos):
                     continue
                 
                 comment_text = match.group(1).strip()
                 if comment_text:
+                    # Skip commented-out code blocks
+                    if re.match(r'^(vim\.|local |function |if |for |while |return |end|}).*', comment_text):
+                        continue
+                    
+                    # Skip single-line code statements  
+                    if re.match(r'^[a-zA-Z_][a-zA-Z0-9_]*\s*[=\(].*', comment_text):
+                        continue
+                        
                     with open('/tmp/hook_debug.log', 'a') as f:
                         f.write(f"Line {i}: '{original_line}' -> '{comment_text}'\n")
                     comments.append({
@@ -111,51 +121,34 @@ def analyze_comments_with_gpt5(comments, code_context):
     # Prepare the prompt for GPT-5-mini
     comments_text = "\n".join([f"Line {c['line']}: {c['text']}" for c in comments])
     
-    prompt = f"""You are a code quality analyzer. Analyze the following comments in the context of the surrounding code to determine if they are redundant or provide useful information.
-
-Code context:
-```
-{code_context}
-```
-
-Comments to analyze:
-{comments_text}
-
-For each comment, determine if it is:
-1. REDUNDANT: States something reasonably obvious from reading the code and adds no value, OR refers to previous states of the code (transitional comments)
-2. USEFUL: Provides context, improves glanceability, explains why, documents complex logic, or adds valuable information
-
-Focus on comments that improve glanceability without adding noise to the code.
-
-IMPORTANT: Comments that reference previous code states, moves, or changes should be considered REDUNDANT as they become stale and don't help understand the current code.
-
-Respond with JSON format:
-{{
-    "analysis": [
-        {{
-            "line": <line_number>,
-            "comment": "<comment_text>",
-            "category": "REDUNDANT" | "USEFUL",
-            "reason": "<brief explanation why it's redundant or useful>"
-        }}
+    prompt_content = [
+        "Analyze these comments to determine if they are REDUNDANT or USEFUL.",
+        "",
+        "Code context:",
+        "```",
+        code_context,
+        "```",
+        "",
+        "Comments:",
+        comments_text,
+        "",
+        "REDUNDANT comments:",
+        "- State the obvious from reading code",
+        "- Talk about how things used to work or what changed (\"instead of\", \"rather than\", \"used to\", \"changed from\", \"previously\", \"now we\", \"unlike before\")",
+        "- Reference other codebase parts that may change over time",
+        "",
+        "USEFUL comments:",  
+        "- Explain WHY (business logic, constraints, requirements)",
+        "- Document non-obvious behavior or edge cases",
+        "- Improve glanceability of complex logic",
+        "- Contain actionable info (TODOs, warnings, performance notes)",
+        "",
+        "CRITICAL: Comments should only describe the current code. Any mention of old approaches, previous states, or what changed makes a comment REDUNDANT.",
+        "",
+        "Respond with JSON:",
+        '{"analysis": [{"line": <number>, "comment": "<text>", "category": "REDUNDANT"|"USEFUL", "reason": "<brief explanation>"}]}'
     ]
-}}
-
-Examples of REDUNDANT comments:
-- "// Set x to 5" above x = 5
-- "// Return true" above return true
-- "// Call function" above someFunction()
-- "// Hand off moved to left side" (transitional comment referencing previous state)
-- "// This used to be on the right" (historical comment about previous code)
-- "// Moved as part of refactoring" (change history comment)
-
-Examples of USEFUL comments (including glanceability enhancers):
-- "// Show only the context up to and including when the AI asked a human" above timeline slicing logic
-- "// Auto-scroll to bottom when timeline is loaded or changes" above useEffect scroll logic  
-- "// Workaround for API bug in v2.1"
-- "// Performance optimization: cache results for 5 minutes"
-- "// TODO: Replace with new authentication system"
-"""
+    prompt = "\n".join(prompt_content)
 
     try:
         # Use gpt5-mini command
