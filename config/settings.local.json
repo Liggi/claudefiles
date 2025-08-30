@@ -1,30 +1,10 @@
 {
   "permissions": {
     "allow": [
-      "Bash(brew list:*)",
-      "Bash(echo *)",
-      "Bash(cursor-agent:*)",
-      "Bash(echo $PATH)",
-      "Bash(tmux capture-pane:*)",
-      "mcp__puppeteer__puppeteer_navigate",
-      "mcp__puppeteer__puppeteer_screenshot",
-      "mcp__puppeteer__puppeteer_fill",
-      "mcp__puppeteer__puppeteer_click",
-      "mcp__puppeteer__puppeteer_evaluate",
-      "Bash(tmux list-keys:*)",
-      "Bash(tmux list-sessions:*)",
-      "Bash(tmux list-panes:*)",
-      "Bash(tmux send-keys:*)",
-      "Bash(gh pr view:*)",
-      "Bash(gh pr diff:*)",
-      "Bash(fd:*)",
-      "Bash(echo * > ~/.claude/note)",
-      "Bash(rm ~/.claude/note)",
-      "WebSearch",
-      "Bash(tmux display-popup:*)",
       "Bash(tmux new-window:*)"
     ],
-    "deny": []
+    "deny": [],
+    "ask": []
   },
   "outputStyle": "Explanatory"
 }

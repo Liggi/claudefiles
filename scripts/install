@@ -8,15 +8,15 @@ echo "🤖 Setting up claudefiles..."
 
 # Backup existing .claude directory if it exists and is not a symlink
 if [[ -d "$CLAUDE_DIR" && ! -L "$CLAUDE_DIR" ]]; then
-    echo "📦 Backing up existing ~/.claude to $BACKUP_DIR"
-    mv "$CLAUDE_DIR" "$BACKUP_DIR"
-    echo "   Your previous settings are safe in $BACKUP_DIR"
+  echo "📦 Backing up existing ~/.claude to $BACKUP_DIR"
+  mv "$CLAUDE_DIR" "$BACKUP_DIR"
+  echo "   Your previous settings are safe in $BACKUP_DIR"
 fi
 
 # Remove existing symlink if present
 if [[ -L "$CLAUDE_DIR" ]]; then
-    echo "🗑️  Removing existing symlink"
-    rm "$CLAUDE_DIR"
+  echo "🗑️  Removing existing symlink"
+  rm "$CLAUDE_DIR"
 fi
 
 # Create symlink
@@ -34,48 +34,48 @@ chmod +x "$CLAUDEFILES_DIR/config/hooks"/*.sh 2>/dev/null || true
 
 # Initialize git repo if not already done
 if [[ ! -d "$CLAUDEFILES_DIR/.git" ]]; then
-    echo "📁 Initializing git repository"
-    cd "$CLAUDEFILES_DIR"
-    git init
-    git add .
-    git commit -m "Initial claudefiles setup"
+  echo "📁 Initializing git repository"
+  cd "$CLAUDEFILES_DIR"
+  git init
+  git add .
+  git commit -m "Initial claudefiles setup"
 fi
 
 # Setup OpenAI CLI with GPT-5
 echo "🤖 Setting up OpenAI CLI with GPT-5..."
 
 # Install OpenAI Python library
-if command -v python3 &> /dev/null; then
-    echo "📦 Installing/updating OpenAI Python library..."
-    python3 -m pip install --user --upgrade openai
-    
-    # Make CLI tools executable
-    chmod +x "$CLAUDEFILES_DIR/bin/gpt5-search" 2>/dev/null || true
-    chmod +x "$CLAUDEFILES_DIR/bin/gpt5-mini" 2>/dev/null || true
-    
-    # Add claudefiles to PATH if not already there
-    SHELL_RC=""
-    if [[ "$SHELL" == */zsh ]]; then
-        SHELL_RC="$HOME/.zshrc"
-    elif [[ "$SHELL" == */bash ]]; then
-        SHELL_RC="$HOME/.bashrc"
+if command -v python3 &>/dev/null; then
+  echo "📦 Installing/updating OpenAI Python library..."
+  python3 -m pip install --user --upgrade openai
+
+  # Make CLI tools executable
+  chmod +x "$CLAUDEFILES_DIR/bin/gpt5-search" 2>/dev/null || true
+  chmod +x "$CLAUDEFILES_DIR/bin/gpt5-mini" 2>/dev/null || true
+
+  # Add claudefiles to PATH if not already there
+  SHELL_RC=""
+  if [[ "$SHELL" == */zsh ]]; then
+    SHELL_RC="$HOME/.zshrc"
+  elif [[ "$SHELL" == */bash ]]; then
+    SHELL_RC="$HOME/.bashrc"
+  fi
+
+  if [[ -n "$SHELL_RC" ]]; then
+    if ! grep -q 'claudefiles.*PATH' "$SHELL_RC" 2>/dev/null; then
+      echo "🔗 Adding claudefiles/bin to PATH in $SHELL_RC..."
+      echo 'export PATH="$HOME/claudefiles/bin:$PATH"' >>"$SHELL_RC"
     fi
-    
-    if [[ -n "$SHELL_RC" ]]; then
-        if ! grep -q 'claudefiles.*PATH' "$SHELL_RC" 2>/dev/null; then
-            echo "🔗 Adding claudefiles/bin to PATH in $SHELL_RC..."
-            echo 'export PATH="$HOME/claudefiles/bin:$PATH"' >> "$SHELL_RC"
-        fi
-    fi
-    
-    # Check for API key
-    if [[ -z "${OPENAI_API_KEY}" ]]; then
-        echo "⚠️  Note: Set OPENAI_API_KEY environment variable to use GPT-5"
-    else
-        echo "✅ OpenAI API key found"
-    fi
+  fi
+
+  # Check for API key
+  if [[ -z "${OPENAI_API_KEY}" ]]; then
+    echo "⚠️  Note: Set OPENAI_API_KEY environment variable to use GPT-5"
+  else
+    echo "✅ OpenAI API key found"
+  fi
 else
-    echo "⚠️  Python 3 not found - OpenAI CLI setup skipped"
+  echo "⚠️  Python 3 not found - OpenAI CLI setup skipped"
 fi
 
 echo "✅ Claudefiles installed successfully!"
@@ -91,3 +91,4 @@ echo "  • Claude Code with your custom configuration"
 echo "  • gpt5-search \"your question\" - GPT-5 with web search"
 echo ""
 echo "Your development environment is now version controlled! 🎉"
+

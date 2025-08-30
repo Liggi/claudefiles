@@ -4,6 +4,7 @@
     "BASH_DEFAULT_TIMEOUT_MS": "900000",
     "BASH_MAX_TIMEOUT_MS": "900000"
   },
+  "includeCoAuthoredBy": false,
   "hooks": {
     "PreToolUse": [
       {
@@ -54,11 +55,11 @@
   "toolPermissions": {
     "allow": [
       "Bash(echo * > ~/.claude/note)",
-      "Bash(rm ~/.claude/note)"
+      "Bash(rm ~/.claude/note)",
+      "Bash(tmux *)"
     ],
     "deny": []
   },
-  "model": "opusplan",
-  "includeCoAuthoredBy": false,
-  "gitAttribution": false
+  "gitAttribution": false,
+  "model": "opusplan"
 }
