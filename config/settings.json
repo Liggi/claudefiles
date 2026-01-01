@@ -6,13 +6,33 @@
   },
   "includeCoAuthoredBy": false,
   "hooks": {
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 /home/jason/.claude/hooks/session-state-hook.py"
+          }
+        ]
+      }
+    ],
+    "SessionStart": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 /home/jason/claudia/scripts/read-shared-state.py"
+          }
+        ]
+      }
+    ],
     "PreToolUse": [
       {
         "matcher": "Bash",
         "hooks": [
           {
             "type": "command",
-            "command": "/Users/jasonliggi/.claude/hooks/file-tools-hook.sh"
+            "command": "/home/jason/.claude/hooks/file-tools-hook.sh"
           }
         ]
       },
@@ -21,7 +41,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "/Users/jasonliggi/.claude/hooks/comment_analyzer.py"
+            "command": "/home/jason/.claude/hooks/comment_analyzer.py"
           }
         ]
       },
@@ -30,7 +50,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "/Users/jasonliggi/.claude/hooks/comment_analyzer.py"
+            "command": "/home/jason/.claude/hooks/comment_analyzer.py"
           }
         ]
       },
@@ -39,7 +59,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "/Users/jasonliggi/.claude/hooks/comment_analyzer.py"
+            "command": "/home/jason/.claude/hooks/comment_analyzer.py"
           }
         ]
       }
@@ -47,7 +67,7 @@
   },
   "statusLine": {
     "type": "command",
-    "command": "bash /Users/jasonliggi/.claude/hooks/statusline-command.sh"
+    "command": "bash /home/jason/.claude/hooks/statusline-command.sh"
   },
   "feedbackSurveyState": {
     "lastShownTime": 1754038067914
@@ -60,6 +80,5 @@
     ],
     "deny": []
   },
-  "gitAttribution": false,
-  "model": "opusplan"
+  "gitAttribution": false
 }
